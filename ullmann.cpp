@@ -10,6 +10,8 @@
 
 int main(void) {
     // inicializace
+    clrscr(); // vycisti plochu
+    
     bool program_run = true;
 
     // nekonecny cyklus
