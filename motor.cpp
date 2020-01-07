@@ -9,12 +9,8 @@ Motor::~Motor() {
     printf("Destruktor objektu Motor \n");
 }
 
-void Motor::Nastartuj(void) {
-    this->chod = true;
-}
+void Motor::Otoc(void) {
 
-void Motor::Vypni(void) {
-    this->chod = false;
 }
 
 void Motor::ObratOtacky(void) {
@@ -26,11 +22,9 @@ void Motor::ObratOtacky(void) {
     }
 }
 
-void Motor::GetSmerOtaceni(void) const {
+bool Motor::GetSmerOtaceni(void) const {
     return this->smer_otaceni;
 }
 
-bool Motor::JeZapnut(void) const {
-    return this->chod;
-}
+
 

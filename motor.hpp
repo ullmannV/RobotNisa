@@ -5,15 +5,13 @@ class Motor {
     public:
         Motor(unsigned char BIT);
         ~Motor();
-        void Nastartuj(void);
-        void Vypni(void);
+        void Otoc(void);
         void ObratOtacky(void);
         bool JeZapnut(void) const;
-        void GetSmerOtaceni(void) const;
+        bool GetSmerOtaceni(void) const;
         
     private:
-        bool smer_otaceni;       // smysl otaceni motoru
-        bool chod;               // stav zda se motor otaci
+        bool smer_otaceni;       // smysl otaceni motoru                     
         const unsigned char BIT; // na jakem bitu je zapojen motor
 };
 #endif
