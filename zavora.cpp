@@ -13,5 +13,8 @@ Zavora::~Zavora() {
 }
 
 bool Zavora::DorazDosazen(void) const {
-    inportb(this->PORT, this->BIT);
+    if(inportb(this->PORT) & 1<<this->BIT) 
+        return false;
+    else
+        return true;    
 }
