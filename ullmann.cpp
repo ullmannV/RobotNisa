@@ -33,7 +33,7 @@ int main(void) {
     clock_t now_time;
 
     // nekonecny cyklus - hlavni cast programu
-    while(program_run) {
+    do {
         
         // taktovaci bit - generovani signalu 
         now_time = clock(); // aktualizace informace o case
@@ -64,11 +64,14 @@ int main(void) {
         }
         else {
             // Pokud neni nic stisknuto ustal robota
-            
+
             // TODO Vypnuti motoru
         }
         
-    }
+        outportb(port_vystupy, output_buffer); // odeslani zpracovanych dat na vystupni piny portu
+        
+    } while(program_run);
+    
     printf("Program vypnut \n");
     return 0;
 }
