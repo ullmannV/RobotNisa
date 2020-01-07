@@ -32,9 +32,13 @@ int main(void) {
     clock_t last_time = clock();
     clock_t now_time;
 
+    // ukazatel na aktivni motor
+    Motor* aktivni_motor;
+    
     // nekonecny cyklus - hlavni cast programu
     do {
-        
+        /* MAYBE DELETE
+
         // taktovaci bit - generovani signalu 
         now_time = clock(); // aktualizace informace o case
 
@@ -43,7 +47,7 @@ int main(void) {
             last_time = now_time;
             output_buffer ^= 1<<BIT_TAKT;   // vytvoreni 1:1 (50%) stridy 
         }
-        
+        */
         // zmena chovani programu pri vstupu z klavesnice
         int key = getch(); // stiskla klavesa
         
@@ -65,11 +69,11 @@ int main(void) {
         else {
             // Pokud neni nic stisknuto ustal robota
 
-            // TODO Vypnuti motoru
+            // Motor* ptr = NULL
         }
         
         outportb(port_vystupy, output_buffer); // odeslani zpracovanych dat na vystupni piny portu
-        
+
     } while(program_run);
     
     printf("Program vypnut \n");
