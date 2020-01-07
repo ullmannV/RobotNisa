@@ -2,11 +2,27 @@
 #include <dos.h>
 #include <conio.h>
 #include <time.h>
-#include "motor.h"
-#include "ullmann.h"
+#include "motor.hpp"
+#include "zavora.hpp"
+#include "ullmann.hpp"
 
 
 
 int main(void) {
+    // inicializace
+    bool program_run = true;
+
+    // nekonecny cyklus
+    while(program_run) {
+        
+        // zmena chovani programu pomoci vstupu z klavesnice
+        switch() { // TODO vstup klavesy
+            case 'q': {
+                program_run = false;
+                break;
+            }
+        } 
+    }
+    printf("Program vypnut \n");
     return 0;
 }
