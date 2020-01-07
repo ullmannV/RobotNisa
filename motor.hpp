@@ -6,7 +6,8 @@ class Motor {
         Motor(unsigned char BIT);
         ~Motor();
         void Otoc(void);
-        void ObratOtacky(void);
+        void SmerOtaceniNula(void);
+        void SmerOtaceniJedna(void);
         bool JeZapnut(void) const;
         bool GetSmerOtaceni(void) const;
         

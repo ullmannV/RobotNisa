@@ -13,11 +13,12 @@ void Motor::Otoc(void) {
 
 }
 
-void Motor::ObratOtacky(void) {
-    if(this->smer_otaceni)
-        this->smer_otaceni = false;
-    else 
-        this->smer_otaceni = true;
+void Motor::SmerOtaceniNula(void) {
+    this->smer_otaceni = false;        
+}
+
+void Motor::SmerOtaceniJedna(void) {
+    this->smer_otaceni = true;
 }
 
 bool Motor::GetSmerOtaceni(void) const {
