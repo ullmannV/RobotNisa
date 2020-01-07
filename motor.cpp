@@ -1,7 +1,4 @@
-#include <iostream>
-#include <dos.h>
-#include <conio.h>
-#include <time.h>
+#include <stdio.h>
 #include "motor.hpp"
 
 Motor::Motor(unsigned char BIT) : BIT(BIT) {

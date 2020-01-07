@@ -1,4 +1,5 @@
-#include <iostream>
+#include <stdlib.h>
+#include <stdio.h>
 #include <dos.h>
 #include <conio.h>
 #include <time.h>
@@ -11,7 +12,7 @@
 int main(void) {
     // inicializace
     clrscr(); // vycisti plochu
-    
+
     bool program_run = true;
 
     // nekonecny cyklus

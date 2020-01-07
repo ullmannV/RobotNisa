@@ -1,7 +1,5 @@
-#include <iostream>
+#include <stdio.h>
 #include <dos.h>
-#include <conio.h>
-#include <time.h>
 #include "zavora.hpp"
 
 Zavora::Zavora(unsigned char BIT, unsigned short PORT) : BIT(BIT), PORT(PORT) {
