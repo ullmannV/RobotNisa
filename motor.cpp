@@ -14,12 +14,10 @@ void Motor::Otoc(void) {
 }
 
 void Motor::ObratOtacky(void) {
-    if(this->smer_otaceni) {
+    if(this->smer_otaceni)
         this->smer_otaceni = false;
-    }
-    else {
+    else 
         this->smer_otaceni = true;
-    }
 }
 
 bool Motor::GetSmerOtaceni(void) const {
