@@ -33,8 +33,8 @@ int main(void) {
     clock_t now_time;
 
     // ukazatel na aktivni motor
-    Motor* aktivni_motor;
-    
+    Motor* aktivni_motor = NULL;
+
     // nekonecny cyklus - hlavni cast programu
     do {
         /* MAYBE DELETE
