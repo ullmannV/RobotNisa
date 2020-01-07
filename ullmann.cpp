@@ -45,9 +45,11 @@ int main(void) {
         }
         
         // zmena chovani programu pri vstupu z klavesnice
-        if(kbhit()) {
-            int key = getch(); // ziskani stiskle klavesy
-
+        int key = getch(); // stiskla klavesa
+        
+        // Reaguj pouze pokud je stiskla nejaka klavesa
+        if(key != EOF) {
+            
             // reakce pouze na pozadovane klavesy
             switch(key) {
                 case 'q': {
@@ -61,6 +63,8 @@ int main(void) {
             } 
         }
         else {
+            // Pokud neni nic stisknuto ustal robota
+            
             // TODO Vypnuti motoru
         }
         
