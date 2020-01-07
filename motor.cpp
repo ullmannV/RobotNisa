@@ -2,14 +2,14 @@
 #include <dos.h>
 #include <conio.h>
 #include <time.h>
-#include "motor.h"
+#include "motor.hpp"
 
 Motor::Motor(unsigned char BIT) : BIT(BIT) {
-    printf("Vytvořen nový objekt motoru \n");
+    printf("Vytvořen nový objekt Motoru \n");
 }
 
 Motor::~Motor() {
-    printf("Destruktor objektu motor \n");
+    printf("Destruktor objektu Motor \n");
 }
 
 void Motor::Nastartuj(void) {
