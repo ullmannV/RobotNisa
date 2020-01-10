@@ -1,5 +1,5 @@
-#ifndef ULLMANN_HPP
-#define ULLMANN_HPP
+#ifndef ULLMANN_H
+#define ULLMANN_H
 
 #define MAX_RYCHLOST_ROBOTA 450 // Hz
 #define VSE_VYPNUTO 0xFF // periferie jsou aktivni v logicke nule
