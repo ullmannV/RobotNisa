@@ -43,7 +43,7 @@ const unsigned short PORT_IN = 0x300;  // Port P3
 const unsigned short MAX_RYCHLOST_ROBOTA = 450; // Hz
 
 // volitelne parametry:
-const unsigned short RYCHLOST_ROBOTA = 100; // Hz
+const unsigned short RYCHLOST_ROBOTA = 450; // Hz
 
 int main(void) {
     // priprava programu
@@ -66,34 +66,44 @@ int main(void) {
        
         // kontrola zda byla stisknuta klavesa
         if(kbhit()) {
-            int pressed_key = getch(); // vyzvednuti z bufferu
-
+            const int pressed_key = getch(); // vyzvednuti z bufferu
+            
+            output_buffer = VSE_VYPNUTO; // reset vystupu
+            
             // reakce na dane stiskle klavesy
             switch(pressed_key) {
                 case control_keys[0]:       // Vypnuti programu
                     program_run = false;
                     break;      
                 case control_keys[1]:       // Otoceni zakladny proti smeru hodinovych rucicek
+                    output_buffer &= ~(1<<BIT_ZAKLDNA) & ~(1<<BIT_SMER);
                     break;
                 case control_keys[2]:       // Otoceni zakladny po smeru hodinovych rucicek
+                    output_buffer &= ~(1<<BIT_ZAKLDNA);
                     break;
                 case control_keys[3]:       // Zvednuti hlavniho ramene
+                    output_buffer &= ~(1<<BIT_HLAVNI_RAMENO) & ~(1<<BIT_SMER);
                     break;
                 case control_keys[4]:       // Snizeni hlavniho ramene
+                    output_buffer &= ~(1<<BIT_HLAVNI_RAMENO);
                     break;
                 case control_keys[5]:       // Zvednuti ramene celisti
+                    output_buffer &= ~(1<<BIT_RAMENO_CELISTI);
                     break;
                 case control_keys[6]:       // Snizeni ramene celisti
+                    output_buffer &= ~(1<<BIT_RAMENO_CELISTI) & ~(1<<BIT_SMER);
                     break;      
                 case control_keys[7]:       // Zavreni celisti
+                    output_buffer &= ~(1<<BIT_CELIST);
                     break;
                 case control_keys[8]:       // Otevreni celisti
+                    output_buffer &= ~(1<<BIT_CELIST) & ~(1<<BIT_SMER);
                     break;
                 default: 
                     printf("Stisknuta neznama klavesa.\n");
                     continue;
-            }
-        } /*End of Switch*/
+            } /*End of Switch*/
+        } 
         
         output_buffer ^= 1<<BIT_TAKT; // Toggle taktovaciho bitu 
 
@@ -104,4 +114,8 @@ int main(void) {
     
     printf("Program vypnut \n");
     return 0;
+}
+
+void initPoloha(void) {
+
 }
