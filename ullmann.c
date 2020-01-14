@@ -159,7 +159,7 @@ void displayStatus(void) {
     clrscr(); // vymaz obrazovku
     
     // Zobraz ovladani
-    printf("Ovladani: %c - konec %c %c - dostran, %c %c - nahoru/dolu, %c %c - nahoru/dolu celisti, %c %c - zavrit/uvolnit celist\n", control_keys[0], control_keys[1], control_keys[2], control_keys[3], control_keys[4], control_keys[5], control_keys[6], control_keys[7], control_keys[8]);
+    printf("Ovladani: %c - konec, %c %c - dostran, %c %c - nahoru/dolu, %c %c - nahoru/dolu celisti, %c %c - zavrit/uvolnit celist, jina klavesa = STOP\n", control_keys[0], control_keys[1], control_keys[2], control_keys[3], control_keys[4], control_keys[5], control_keys[6], control_keys[7], control_keys[8]);
     
     // TODO zobrazeni stavu kazdeho motoru
 }
