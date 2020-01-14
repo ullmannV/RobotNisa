@@ -31,7 +31,7 @@ const unsigned char ZAVORY_NEAKTIVNI = 0xFF; // zavory jsou aktivni v logicke nu
 const unsigned char VSE_NA_DORAZU = ZAVORY_NEAKTIVNI & ~(1<<BIT_ZAKLDNA) & ~(1<<BIT_HLAVNI_RAMENO) & ~(1<<BIT_RAMENO_CELISTI) & ~(1<<BIT_CELIST);
 const unsigned short SEC_TO_MILISEC_COEFFICIENT = 1000; // 1 s = 1000 ms
 
-// pole klaves k ovladani
+// pole klaves k ovladani 
 const char control_keys[] = 
 {
     'q', // Vypnuti programu
@@ -43,7 +43,7 @@ const char control_keys[] =
     'f', // Snizeni ramene celisti
     'x', // Zavreni celisti
     'c'  // Otevreni celisti
-};
+}; // Jina klavesa -> STOP
 
 // nastavitelne parametry:
 const unsigned short RYCHLOST_ROBOTA = 450; // Hz
@@ -63,7 +63,7 @@ int main(void) {
     bool program_run = true;
 
     // prevedeni rychlosti v Hz na ms
-    const unsigned int perioda_taktu_ms = taktovaci_frekvence_robota < MAX_RYCHLOST_ROBOTA ? SEC_TO_MILISEC_COEFFICIENT/taktovaci_frekvence_robota : SEC_TO_MILISEC_COEFFICIENT/MAX_RYCHLOST_ROBOTA;    
+    const unsigned int perioda_taktu_ms = RYCHLOST_ROBOTA < MAX_RYCHLOST_ROBOTA ? SEC_TO_MILISEC_COEFFICIENT/RYCHLOST_ROBOTA : SEC_TO_MILISEC_COEFFICIENT/MAX_RYCHLOST_ROBOTA;    
     
     // uvedeni programu do pocatecniho stavu
     rezimProvozu = initPoloha;
@@ -96,15 +96,18 @@ void initPoloha(unsigned char* output) {
     if(input == VSE_NA_DORAZU) {
         *output = VSE_VYPNUTO;
         rezimProvozu = manualControl;
+        printf("Robot je pripraven k pouziti. \n");
     }
 }
 
 void manualControl(unsigned char* output) {
+    displayStatus(); // Zobraz stav programu
+    
     // kontrola zda byla stisknuta klavesa
     if(kbhit()) {
         const int pressed_key = getch(); // vyzvednuti z bufferu
             
-        output_buffer = VSE_VYPNUTO; // reset vystupu
+        *output = VSE_VYPNUTO; // reset vystupu
             
         // reakce na dane stiskle klavesy
         switch(pressed_key) {
@@ -136,8 +139,16 @@ void manualControl(unsigned char* output) {
                 *output &= ~(1<<BIT_CELIST) & ~(1<<BIT_SMER);
                 break;
             default: 
-                printf("Stisknuta neznama klavesa.\n");
+                // vsechny motory budou vypnute
                 continue;
         } /*End of Switch*/
     } 
+}
+
+void displayStatus(void) {
+    clrscr(); // vymaz obrazovku
+    
+    // Zobraz ovladani
+    printf("Ovladani: %c - konec %c %c - dostran, %c %c - nahoru/dolu, %c %c - nahoru/dolu celisti, %c %c - zavrit/uvolnit celist\n", control_keys[0], control_keys[1], control_keys[2], control_keys[3], control_keys[4], control_keys[5], control_keys[6], control_keys[7], control_keys[8]);
+
 }

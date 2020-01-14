@@ -3,5 +3,6 @@
 
 void initPoloha(unsigned char* output);
 void manualControl(unsigned char* output);
+void displayStatus(void);
 
 #endif
