@@ -3,6 +3,7 @@
 #include <dos.h>
 #include <conio.h>
 #include "ullmann.h"
+#include "booleanDOS.h"
 
 
 // Zapojeni
@@ -13,7 +14,7 @@
     BIT_ZAKLADNA = 0 -> motor zakladny je zapojen na VYSTUPNIM portu na bitu 0
                      -> zavora zakladny je zapojena na VSTUPNIM portu na bitu 0 
 */
-const unsigned char BIT_ZAKLDNA = 0;
+const unsigned char BIT_ZAKLADNA = 0;
 const unsigned char BIT_HLAVNI_RAMENO = 1;
 const unsigned char BIT_RAMENO_CELISTI = 2;
 const unsigned char BIT_CELIST = 3;
@@ -28,8 +29,9 @@ const unsigned short MAX_RYCHLOST_ROBOTA = 450; // Hz
 // pomocne konstanty
 const unsigned char VSE_VYPNUTO = 0xFF; // periferie jsou aktivni v logicke nule
 const unsigned char ZAVORY_NEAKTIVNI = 0xFF; // zavory jsou aktivni v logicke nule
-const unsigned char VSE_NA_DORAZU = ZAVORY_NEAKTIVNI & ~(1<<BIT_ZAKLDNA) & ~(1<<BIT_HLAVNI_RAMENO) & ~(1<<BIT_RAMENO_CELISTI) & ~(1<<BIT_CELIST);
+const unsigned char VSE_NA_DORAZU = ZAVORY_NEAKTIVNI & ~(1<<BIT_ZAKLADNA) & ~(1<<BIT_HLAVNI_RAMENO) & ~(1<<BIT_RAMENO_CELISTI) & ~(1<<BIT_CELIST);
 const unsigned short SEC_TO_MILISEC_COEFFICIENT = 1000; // 1 s = 1000 ms
+
 
 // pole klaves k ovladani 
 const char control_keys[] = 
@@ -48,6 +50,10 @@ const char control_keys[] =
 // nastavitelne parametry:
 const unsigned short RYCHLOST_ROBOTA = 450; // Hz
 
+// podminka behu programu
+bool program_run = true;
+
+// function pointer
 void (*rezimProvozu)(unsigned char*);
 
 int main(void) {
@@ -57,10 +63,7 @@ int main(void) {
     clrscr(); // vycisti plochu
     unsigned char output_buffer = VSE_VYPNUTO; 
 
-    outportb(port_vystupy, output_buffer); // motory vypnuty
-
-    // podminka behu programu
-    bool program_run = true;
+    outportb(PORT_OUT, output_buffer); // motory vypnuty   
 
     // prevedeni rychlosti v Hz na ms
     const unsigned int perioda_taktu_ms = RYCHLOST_ROBOTA < MAX_RYCHLOST_ROBOTA ? SEC_TO_MILISEC_COEFFICIENT/RYCHLOST_ROBOTA : SEC_TO_MILISEC_COEFFICIENT/MAX_RYCHLOST_ROBOTA;    
@@ -76,7 +79,7 @@ int main(void) {
         
         output_buffer ^= 1<<BIT_TAKT; // Toggle taktovaciho bitu 
 
-        outportb(port_vystupy, output_buffer); // odeslani zpracovanych dat na vystupni piny portu
+        outportb(PORT_OUT, output_buffer); // odeslani zpracovanych dat na vystupni piny portu
         delay(perioda_taktu_ms); // Zpozdeni pro generovani taktu
 
     } while(program_run); /*End of Main Infinite Loop*/ 
@@ -88,7 +91,7 @@ int main(void) {
 void initPoloha(unsigned char* output) {
     
     // toc se vsemi motory dokud neni dosazena vychozi poloha 
-    *output &= ~(1<<BIT_ZAKLDNA) & ~(1<<BIT_HLAVNI_RAMENO) & ~(1<<BIT_RAMENO_CELISTI) & ~(1<<BIT_CELIST);
+    *output &= ~(1<<BIT_ZAKLADNA) & ~(1<<BIT_HLAVNI_RAMENO) & ~(1<<BIT_RAMENO_CELISTI) & ~(1<<BIT_CELIST);
     
     const unsigned char input = inportb(PORT_IN); // precti vstupy (zavory)
     
@@ -101,8 +104,7 @@ void initPoloha(unsigned char* output) {
 }
 
 void manualControl(unsigned char* output) {
-    displayStatus(); // Zobraz stav programu
-    
+        
     // kontrola zda byla stisknuta klavesa
     if(kbhit()) {
         const int pressed_key = getch(); // vyzvednuti z bufferu
@@ -115,10 +117,10 @@ void manualControl(unsigned char* output) {
                 program_run = false;
                 break;      
             case control_keys[1]:       // Otoceni zakladny proti smeru hodinovych rucicek
-                *output &= ~(1<<BIT_ZAKLDNA) & ~(1<<BIT_SMER);
+                *output &= ~(1<<BIT_ZAKLADNA) & ~(1<<BIT_SMER);
                 break;
             case control_keys[2]:       // Otoceni zakladny po smeru hodinovych rucicek
-                *output &= ~(1<<BIT_ZAKLDNA);
+                *output &= ~(1<<BIT_ZAKLADNA);
                 break;
             case control_keys[3]:       // Zvednuti hlavniho ramene
                 *output &= ~(1<<BIT_HLAVNI_RAMENO) & ~(1<<BIT_SMER);
@@ -142,7 +144,15 @@ void manualControl(unsigned char* output) {
                 // vsechny motory budou vypnute
                 continue;
         } /*End of Switch*/
-    } 
+        displayStatus(); // Zobraz stav programu
+    }
+    // Kontrola zavor
+    const unsigned char input = inportb(PORT_IN); // Precteni stavu zavor
+    
+    // vypni motor pokud byla dosazena jeho zavora
+    // zavora aktivni -> log. 0 => negace = 1 => nahraje se do motoru => vypne jej
+    // bit 4-7 na vstupu nezapojeny => po negaci log. 0 => neovlivni vystup
+    *output |= ~(input);
 }
 
 void displayStatus(void) {
@@ -150,5 +160,6 @@ void displayStatus(void) {
     
     // Zobraz ovladani
     printf("Ovladani: %c - konec %c %c - dostran, %c %c - nahoru/dolu, %c %c - nahoru/dolu celisti, %c %c - zavrit/uvolnit celist\n", control_keys[0], control_keys[1], control_keys[2], control_keys[3], control_keys[4], control_keys[5], control_keys[6], control_keys[7], control_keys[8]);
-
+    
+    // TODO zobrazeni stavu kazdeho motoru
 }
