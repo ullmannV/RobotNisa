@@ -157,7 +157,7 @@ void manualControl(unsigned char* output) {
                 break;
             default: 
                 // vsechny motory budou vypnute
-                continue;
+                break;
         } /*End of the Switch*/
     }
     
