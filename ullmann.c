@@ -93,24 +93,32 @@ int main(void) {
 }
 
 void initPoloha(unsigned char* output) {
+   
     // roztoc motory
     *output &= ~(1<<BIT_ZAKLADNA) & ~(1<<BIT_HLAVNI_RAMENO) & ~(1<<BIT_CELIST) & ~(1<<BIT_SMER);
     
     // nacti vstupy
     const unsigned char input = inportb(PORT_IN);
+
     // testy dorazů
     testZavory(input, output, BIT_ZAKLADNA);
     testZavory(input, output, BIT_HLAVNI_RAMENO);
     testZavory(input, output, BIT_CELIST);
 
+
     // kalibrace vsech poloh dokoncena?
-    if(input & (1<<BIT_ZAKLADNA & 1<<BIT_HLAVNI_RAMENO & 1<<BIT_CELIST))
+    if(!(input & ~(~(1<<BIT_ZAKLADNA) & ~(1<<BIT_HLAVNI_RAMENO) & ~(1<<BIT_CELIST))))
         rezimProvozu = initRameneChapadla;
     
 }
 
 void initRameneChapadla(unsigned char* output) {
-
+    
+    // roztoc motory
+    *output &= ~(1<<BIT_RAMENO_CELISTI);
+    
+    // nastav smer otaceni
+    *output |= 1<<BIT_SMER;
 }
 
 void manualControl(unsigned char* output) {
