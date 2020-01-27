@@ -28,26 +28,11 @@ const unsigned char VSE_VYPNUTO = 0xFF; // periferie jsou aktivni v logicke nule
 const unsigned char ZAVORY_NEAKTIVNI = 0xFF; // zavory jsou aktivni v logicke nule
 const unsigned short SEC_TO_MILISEC_COEFFICIENT = 1000; // 1 s = 1000 ms
 
-
-// pole klaves k ovladani 
-const char control_keys[] = 
-{
-    'q', // Vypnuti programu
-    'a', // Otoceni zakladny proti smeru hodinovych rucicek
-    'd', // Otoceni zakladny po smeru hodinovych rucicek
-    'w', // Zvednuti hlavniho ramene
-    's', // Snizeni hlavniho ramene
-    'r', // Zvednuti ramene celisti
-    'f', // Snizeni ramene celisti
-    'x', // Zavreni celisti
-    'c'  // Otevreni celisti
-}; // Jina klavesa -> STOP
-
 // nastavitelne parametry:
 const unsigned short RYCHLOST_ROBOTA = 450; // Hz
 
 // podminka behu programu
-bool program_run = true;
+bool program_run = true; // C++ kompilator => netřeba definovat bool
 
 // deklarace funkci
 void initPoloha(unsigned char* output);
@@ -137,51 +122,48 @@ void manualControl(unsigned char* output) {
     // kontrola zda byla stisknuta klavesa
     if(kbhit()) {
         const int pressed_key = getch(); // vyzvednuti z bufferu
-            
-        *output = VSE_VYPNUTO; // reset vystupu
+        
+        // reset motorů a smeru  
+        *output |= 1<<BIT_ZAKLADNA | 1<<BIT_HLAVNI_RAMENO | 1<<BIT_RAMENO_CELISTI | 1<<BIT_CELIST | 1<<BIT_SMER; 
             
         // reakce na dane stiskle klavesy
         switch(pressed_key) {
-            case control_keys[0]:       // Vypnuti programu
+            case 'q':       // Vypnuti programu
                 program_run = false;
                 break;      
-            case control_keys[1]:       // Otoceni zakladny proti smeru hodinovych rucicek
+            case 'a':       // Otoceni zakladny proti smeru hodinovych rucicek
                 *output &= ~(1<<BIT_ZAKLADNA) & ~(1<<BIT_SMER);
                 break;
-            case control_keys[2]:       // Otoceni zakladny po smeru hodinovych rucicek
+            case 'd':       // Otoceni zakladny po smeru hodinovych rucicek
                 *output &= ~(1<<BIT_ZAKLADNA);
                 break;
-            case control_keys[3]:       // Zvednuti hlavniho ramene
+            case 'w':       // Zvednuti hlavniho ramene
                 *output &= ~(1<<BIT_HLAVNI_RAMENO) & ~(1<<BIT_SMER);
                 break;
-            case control_keys[4]:       // Snizeni hlavniho ramene
+            case 's':       // Snizeni hlavniho ramene
                 *output &= ~(1<<BIT_HLAVNI_RAMENO);
                 break;
-            case control_keys[5]:       // Zvednuti ramene celisti
+            case 'r':       // Zvednuti ramene celisti
                 *output &= ~(1<<BIT_RAMENO_CELISTI);
                 break;
-            case control_keys[6]:       // Snizeni ramene celisti
+            case 'f':       // Snizeni ramene celisti
                 *output &= ~(1<<BIT_RAMENO_CELISTI) & ~(1<<BIT_SMER);
                 break;      
-            case control_keys[7]:       // Zavreni celisti
+            case 'x':       // Zavreni celisti
                 *output &= ~(1<<BIT_CELIST);
                 break;
-            case control_keys[8]:       // Otevreni celisti
+            case 'c':       // Otevreni celisti
                 *output &= ~(1<<BIT_CELIST) & ~(1<<BIT_SMER);
                 break;
             default: 
                 // vsechny motory budou vypnute
                 continue;
-        } /*End of Switch*/
-        displayStatus(); // Zobraz stav programu
+        } /*End of the Switch*/
     }
-    // Kontrola zavor
-    const unsigned char input = inportb(PORT_IN); // Precteni stavu zavor
     
-    // vypni motor pokud byla dosazena jeho zavora
-    // zavora aktivni -> log. 0 => negace = 1 => nahraje se do motoru => vypne jej
-    // bit 4-7 na vstupu nezapojeny => po negaci log. 0 => neovlivni vystup
-    *output |= ~(input);
+    // Kontrola zavor
+    const unsigned char input = inportb(PORT_IN); // Precteni stavu zavor    
+    
 }
 
 void testZavory(const unsigned char input, unsigned char* output, const unsigned char bit) {
