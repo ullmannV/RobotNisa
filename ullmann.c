@@ -119,6 +119,17 @@ void initRameneChapadla(unsigned char* output) {
     
     // nastav smer otaceni
     *output |= 1<<BIT_SMER;
+    
+    // nacti vstupy
+    const unsigned char input = inportb(PORT_IN);
+    
+    // test dorazu
+    testZavory(input, output, BIT_RAMENO_CELISTI);
+
+    // kalibrace polohy dokoncena
+    if(!(input & 1<<BIT_RAMENO_CELISTI)) 
+        rezimProvozu = manualControl;
+
 }
 
 void manualControl(unsigned char* output) {
