@@ -167,7 +167,7 @@ void manualControl(unsigned char* output) {
     // pokud smer je v log. 0
     if(!(*output & 1<<BIT_SMER)) {
         
-        // testy dorazů
+        // testy dorazu
         testZavory(input, output, BIT_ZAKLADNA);
         testZavory(input, output, BIT_HLAVNI_RAMENO);
         testZavory(input, output, BIT_CELIST);
