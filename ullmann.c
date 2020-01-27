@@ -164,6 +164,19 @@ void manualControl(unsigned char* output) {
     // Kontrola zavor
     const unsigned char input = inportb(PORT_IN); // Precteni stavu zavor    
     
+    // pokud smer je v log. 0
+    if(!(*output & 1<<BIT_SMER)) {
+        
+        // testy dorazů
+        testZavory(input, output, BIT_ZAKLADNA);
+        testZavory(input, output, BIT_HLAVNI_RAMENO);
+        testZavory(input, output, BIT_CELIST);
+    }
+    else {
+        
+        // test dorazu
+        testZavory(input, output, BIT_RAMENO_CELISTI);
+    }
 }
 
 void testZavory(const unsigned char input, unsigned char* output, const unsigned char bit) {
