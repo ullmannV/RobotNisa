@@ -2,9 +2,6 @@
 #include <stdio.h>
 #include <dos.h>
 #include <conio.h>
-#include "ullmann.h"
-#include "booleanDOS.h"
-
 
 // Zapojeni
 /*
@@ -18,8 +15,8 @@ const unsigned char BIT_ZAKLADNA = 0;
 const unsigned char BIT_HLAVNI_RAMENO = 1;
 const unsigned char BIT_RAMENO_CELISTI = 2;
 const unsigned char BIT_CELIST = 3;
-const unsigned char BIT_TAKT = 4;
-const unsigned char BIT_SMER = 5;
+const unsigned char BIT_SMER = 4;
+const unsigned char BIT_TAKT = 5;
 
 // konstrukcni konstanty
 const unsigned short PORT_OUT = 0x300; // Port P1
@@ -29,7 +26,6 @@ const unsigned short MAX_RYCHLOST_ROBOTA = 450; // Hz
 // pomocne konstanty
 const unsigned char VSE_VYPNUTO = 0xFF; // periferie jsou aktivni v logicke nule
 const unsigned char ZAVORY_NEAKTIVNI = 0xFF; // zavory jsou aktivni v logicke nule
-const unsigned char VSE_NA_DORAZU = ZAVORY_NEAKTIVNI & ~(1<<BIT_ZAKLADNA) & ~(1<<BIT_HLAVNI_RAMENO) & ~(1<<BIT_RAMENO_CELISTI) & ~(1<<BIT_CELIST);
 const unsigned short SEC_TO_MILISEC_COEFFICIENT = 1000; // 1 s = 1000 ms
 
 
@@ -53,6 +49,11 @@ const unsigned short RYCHLOST_ROBOTA = 450; // Hz
 // podminka behu programu
 bool program_run = true;
 
+// deklarace funkci
+void initPoloha(unsigned char* output);
+void initRameneChapadla(unsigned char* output);
+void manualControl(unsigned char* output);
+
 // function pointer
 void (*rezimProvozu)(unsigned char*);
 
@@ -66,7 +67,9 @@ int main(void) {
     outportb(PORT_OUT, output_buffer); // motory vypnuty   
 
     // prevedeni rychlosti v Hz na ms
-    const unsigned int perioda_taktu_ms = RYCHLOST_ROBOTA < MAX_RYCHLOST_ROBOTA ? SEC_TO_MILISEC_COEFFICIENT/RYCHLOST_ROBOTA : SEC_TO_MILISEC_COEFFICIENT/MAX_RYCHLOST_ROBOTA;    
+    const unsigned int perioda_taktu_ms = RYCHLOST_ROBOTA < MAX_RYCHLOST_ROBOTA ? 
+        0.5*(SEC_TO_MILISEC_COEFFICIENT/RYCHLOST_ROBOTA) :      // true
+        0.5*(SEC_TO_MILISEC_COEFFICIENT/MAX_RYCHLOST_ROBOTA);   // false - vyšší rychlost robot neumi
     
     // uvedeni programu do pocatecniho stavu
     rezimProvozu = initPoloha;
@@ -89,18 +92,18 @@ int main(void) {
 }
 
 void initPoloha(unsigned char* output) {
+    // roztoc motory
+    *output &= ~(1<<BIT_ZAKLADNA) & ~(1<<BIT_HLAVNI_RAMENO) & ~(1<<BIT_CELIST) & ~(1<<BIT_SMER);
     
-    // toc se vsemi motory dokud neni dosazena vychozi poloha 
-    *output &= ~(1<<BIT_ZAKLADNA) & ~(1<<BIT_HLAVNI_RAMENO) & ~(1<<BIT_RAMENO_CELISTI) & ~(1<<BIT_CELIST);
+    // nacti vstupy
+    unsigned char input = inportb(PORT_IN);
+
+
     
-    const unsigned char input = inportb(PORT_IN); // precti vstupy (zavory)
-    
-    // Zkontroluj zda je dosazena vychozi poloha
-    if(input == VSE_NA_DORAZU) {
-        *output = VSE_VYPNUTO;
-        rezimProvozu = manualControl;
-        printf("Robot je pripraven k pouziti. \n");
-    }
+}
+
+void initRameneChapadla(unsigned char* output) {
+
 }
 
 void manualControl(unsigned char* output) {
@@ -153,13 +156,4 @@ void manualControl(unsigned char* output) {
     // zavora aktivni -> log. 0 => negace = 1 => nahraje se do motoru => vypne jej
     // bit 4-7 na vstupu nezapojeny => po negaci log. 0 => neovlivni vystup
     *output |= ~(input);
-}
-
-void displayStatus(void) {
-    clrscr(); // vymaz obrazovku
-    
-    // Zobraz ovladani
-    printf("Ovladani: %c - konec, %c %c - dostran, %c %c - nahoru/dolu, %c %c - nahoru/dolu celisti, %c %c - zavrit/uvolnit celist, jina klavesa = STOP\n", control_keys[0], control_keys[1], control_keys[2], control_keys[3], control_keys[4], control_keys[5], control_keys[6], control_keys[7], control_keys[8]);
-    
-    // TODO zobrazeni stavu kazdeho motoru
 }
