@@ -63,7 +63,7 @@ int main(void) {
     // nekonecny cyklus - hlavni cast programu
     do {
        
-        // vykonani inicializacniho behu nebo rizeni z klavesnice
+        // vykonani nasaveni polohy nebo rizeni z klavesnice
         rezimProvozu(&output_buffer);
         
         output_buffer ^= 1<<BIT_TAKT; // Toggle taktovaciho bitu 
