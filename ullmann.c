@@ -53,6 +53,7 @@ bool program_run = true;
 void initPoloha(unsigned char* output);
 void initRameneChapadla(unsigned char* output);
 void manualControl(unsigned char* output);
+void testZavory(const unsigned char input, unsigned char* output, const unsigned char bit);
 
 // function pointer
 void (*rezimProvozu)(unsigned char*);
@@ -96,9 +97,15 @@ void initPoloha(unsigned char* output) {
     *output &= ~(1<<BIT_ZAKLADNA) & ~(1<<BIT_HLAVNI_RAMENO) & ~(1<<BIT_CELIST) & ~(1<<BIT_SMER);
     
     // nacti vstupy
-    unsigned char input = inportb(PORT_IN);
+    const unsigned char input = inportb(PORT_IN);
+    // testy dorazů
+    testZavory(input, output, BIT_ZAKLADNA);
+    testZavory(input, output, BIT_HLAVNI_RAMENO);
+    testZavory(input, output, BIT_CELIST);
 
-
+    // kalibrace vsech poloh dokoncena?
+    if(input & (1<<BIT_ZAKLADNA & 1<<BIT_HLAVNI_RAMENO & 1<<BIT_CELIST))
+        rezimProvozu = initRameneChapadla;
     
 }
 
@@ -156,4 +163,10 @@ void manualControl(unsigned char* output) {
     // zavora aktivni -> log. 0 => negace = 1 => nahraje se do motoru => vypne jej
     // bit 4-7 na vstupu nezapojeny => po negaci log. 0 => neovlivni vystup
     *output |= ~(input);
+}
+
+void testZavory(const unsigned char input, unsigned char* output, const unsigned char bit) {
+    // Pokud je zavora aktivni 
+    if(!(input & 1<<bit))
+        *output |= 1<<bit; // vypni motor
 }
